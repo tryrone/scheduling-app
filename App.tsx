@@ -42,9 +42,10 @@ const AddBtn = () => {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    "DMSans-Regular": require("./assets/fonts/DMSans-Regular.ttf"),
-    "DMSans-Bold": require("./assets/fonts/DMSans-Bold.ttf"),
+    "Graphik-Medium": require("./assets/fonts/Graphik-Medium.otf"),
+    "Graphik-Regular": require("./assets/fonts/Graphik-Regular.otf"),
     "DMSans-Medium": require("./assets/fonts/DMSans-Medium.ttf"),
+    "DMSans-Bold": require("./assets/fonts/DMSans-Bold.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -65,7 +66,7 @@ export default function App() {
               width: 0,
               height: -1,
             },
-            shadowOpacity: 0.001,
+            shadowOpacity: 0.1,
             shadowRadius: 10,
             elevation: 10,
           },

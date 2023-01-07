@@ -10,9 +10,9 @@ const TextStyle = styled(Text)<{
   fontWeight?: string;
   color?: string;
   top?: number;
-  right?: string;
-  left?: string;
-  bottom?: string;
+  right?: number;
+  left?: number;
+  bottom?: number;
   align?: string;
   customStyle?: {} | null;
   maxWidth?: string;
@@ -40,9 +40,9 @@ type CustomTextProp = {
   fontWeight?: string;
   color?: string;
   top?: number;
-  right?: string;
-  left?: string;
-  bottom?: string;
+  right?: number;
+  left?: number;
+  bottom?: number;
   align?: string;
   style?: TextStyleProps | null;
   maxWidth?: string;

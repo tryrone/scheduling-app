@@ -1,11 +1,17 @@
-import { View, Text } from "react-native";
 import React from "react";
+import SafeAreaWrap from "../components/SafeAreaWrap";
+import Colors from "../constants/Colors";
+import DetailHeader from "./components/DetailHeader";
+import Schedule from "./components/Schedule";
 
-const Detail = () => {
+const Detail = ({ navigation }: any): JSX.Element => {
   return (
-    <View>
-      <Text>Detail</Text>
-    </View>
+    <SafeAreaWrap safeAreaBg={Colors?.black} bg={Colors?.black}>
+      <>
+        <DetailHeader navigation={navigation} />
+        <Schedule />
+      </>
+    </SafeAreaWrap>
   );
 };
 

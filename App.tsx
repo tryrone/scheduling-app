@@ -5,6 +5,9 @@ import Home from "./src/Home";
 import styled from "styled-components/native";
 import { homeIcon, profileIcon } from "./assets/images";
 import { PlusIcon } from "./assets/svg";
+import "react-native-gesture-handler";
+import { createStackNavigator } from "@react-navigation/stack";
+import Detail from "./src/DetailScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -40,6 +43,8 @@ const AddBtn = () => {
   );
 };
 
+const HomeStack = createStackNavigator();
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     "Graphik-Medium": require("./assets/fonts/Graphik-Medium.otf"),
@@ -51,6 +56,20 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+
+  const HomeStackNavigation = () => {
+    return (
+      <HomeStack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+        initialRouteName="HomePage"
+      >
+        <Tab.Screen name="HomePage" component={Home} />
+        <Tab.Screen name="Detail" component={Detail} />
+      </HomeStack.Navigator>
+    );
+  };
 
   return (
     <NavigationContainer>
@@ -80,7 +99,7 @@ export default function App() {
             },
             tabBarShowLabel: false,
           }}
-          component={Home}
+          component={HomeStackNavigation}
         />
         <Tab.Screen
           name="Add"

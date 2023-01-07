@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, SafeAreaView, ViewStyle} from 'react-native';
-import React from 'react';
-import Colors from '../../constants/Colors';
+import { View, SafeAreaView, ViewStyle } from "react-native";
+import React from "react";
+import Colors from "../../constants/Colors";
 
 type SafeAreaProp = {
   children: JSX.Element;
@@ -16,8 +16,8 @@ const SafeAreaWrap = ({
   children,
   style,
   bg = Colors.white,
-  height = '100%',
-  width = '100%',
+  height = "100%",
+  width = "100%",
   safeAreaBg = Colors.white,
 }: SafeAreaProp): JSX.Element => {
   return (
@@ -25,14 +25,16 @@ const SafeAreaWrap = ({
       style={{
         backgroundColor: safeAreaBg,
         flex: 1,
-      }}>
+      }}
+    >
       <View
         style={{
           backgroundColor: bg,
           height,
           width,
           ...style,
-        }}>
+        }}
+      >
         {children}
       </View>
     </SafeAreaView>

@@ -1,10 +1,13 @@
 import React from "react";
-import { View, ViewStyle, TextStyle, ScrollView } from "react-native";
+import { View, ScrollView, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { ChevDownSvg } from "../../../assets/svg";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import Fonts from "../../constants/Fonts";
+import { AdgendaDataItem, calculateData, getTime } from "../../utils";
+
+const { width: windowWidth } = Dimensions?.get("window");
 
 const Container = styled.View`
   flex: 1;
@@ -31,24 +34,6 @@ const Row = styled.View`
   align-items: center;
 `;
 
-const DrowdownWrap = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  padding: 12px;
-  background-color: ${Colors?.grey_6};
-  border-radius: 20px;
-`;
-
-const TimeItemWrap = styled.View<{
-  lineBg?: string;
-}>`
-  height: 70px;
-  justify-content: space-between;
-  padding-left: 10px;
-  position: relative;
-  flex: 1;
-`;
-
 const Dot = styled.View<{
   bgColor?: string;
 }>`
@@ -56,19 +41,6 @@ const Dot = styled.View<{
     width: 10px;
     border-radius: ${10 / 2}px
     background-color: ${({ bgColor }) => bgColor || Colors?.tomato_red}
-`;
-
-const BubbleWrap = styled.View<{
-  bgColor?: string;
-}>`
-  height: 100%;
-  width: 100%;
-  border-radius: 20px;
-  border-top-left-radius: 0px;
-  padding: 16px;
-  background-color: ${({ bgColor }) => bgColor || Colors?.light_red};
-  justify-content: space-between;
-  overflow: hidden;
 `;
 
 const Line = styled.View<{
@@ -79,8 +51,37 @@ const Line = styled.View<{
   width: 2px;
   background-color: ${({ lineBg }) => lineBg};
   position: absolute;
-  left: -2px;
+  left: 4px;
   top: 6px;
+`;
+
+const DrowdownWrap = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  padding: 12px;
+  background-color: ${Colors?.grey_6};
+  border-radius: 20px;
+`;
+
+const BubbleWrap = styled.View<{
+  bgColor?: string;
+  width: number;
+  height: number;
+  left: number;
+  top?: number;
+  padding?: number;
+}>`
+  height: ${({ height }) => height}px;
+  width: ${({ width }) => width}px;
+  left: ${({ left }) => left}px;
+  top: ${({ top }) => top || 0}px;
+  border-radius: 20px;
+  border-top-left-radius: 0px;
+  padding: ${({ padding }) => padding || 16}px;
+  background-color: ${({ bgColor }) => bgColor || Colors?.light_red};
+  justify-content: space-between;
+  overflow: hidden;
+  position: absolute;
 `;
 
 type WeekDayProp = {
@@ -89,22 +90,16 @@ type WeekDayProp = {
   isSelected: boolean;
 };
 
-type TimeItemProp = {
-  endDotColor: string;
-  timeLineColor: string;
-  startTime?: string;
-  endTime: string;
+type TimeLineItemProps = {
+  timeText: string;
+  isLast: boolean;
+  AdgendaData: AdgendaDataItem[];
 };
 
-type AdgendaItemProp = {
-  bubbleBgColor: string;
-  endDotColor: string;
-  timeLineColor: string;
+type BubbleProps = {
   startTime?: string;
-  endTime: string;
-};
-
-type BubbleProp = {
+  endTime?: string;
+  text?: string;
   bg: string;
 };
 
@@ -192,150 +187,141 @@ const TimeLineHeader: React.FC = (): JSX.Element => {
   );
 };
 
-const TimeItem = ({
-  endDotColor,
-  timeLineColor,
-  startTime,
-  endTime,
-}: TimeItemProp): JSX.Element => {
-  const startDotStyle: ViewStyle = {
-    position: "absolute",
-    top: 0,
-    left: -16,
-  };
-  const endDotStyle: ViewStyle = {
-    position: "absolute",
-    bottom: 0,
-    left: -16,
-  };
+const Bubble = ({ startTime, endTime, text, bg }: BubbleProps) => {
+  const startHour = startTime ? parseInt(startTime.split(":")[0]) : 0;
+  const endHour = endTime ? parseInt(endTime.split(":")[0]) : 0;
+  const startMin = startTime ? parseInt(startTime.split(":")[1]) : 0;
+  const endMin = endTime ? parseInt(endTime.split(":")[1]) : 0;
+  const left = windowWidth * 0.12;
+  const width = (endHour + endMin - (startHour + startMin)) * 240;
 
-  const startTextStyle: TextStyle = {
-    position: "relative",
-    top: -3,
-  };
-  const endTextStyle: TextStyle = {
-    position: "relative",
-    top: 3,
-  };
+  const { height } = calculateData({
+    startHr: startHour,
+    endHr: endHour,
+    endMin: endMin,
+    startMin: startMin,
+  });
+
+  const hr = endHour - startHour;
 
   return (
-    <TimeItemWrap>
-      <Row>
-        {startTime && <Dot style={startDotStyle} />}
-
-        <CustomText
-          fontSize={15}
-          style={startTextStyle}
-          fontFamily={Fonts?.GraphikRegular}
-        >
-          {startTime || ""}
-        </CustomText>
-      </Row>
-
-      <Row>
-        <Dot style={endDotStyle} bgColor={endDotColor} />
-        <CustomText
-          fontSize={15}
-          style={endTextStyle}
-          fontFamily={Fonts?.GraphikRegular}
-        >
-          {endTime}
-        </CustomText>
-      </Row>
-      <Line
-        height={startTime ? "100%" : "150%"}
-        style={{ top: startTime ? 0 : -35 }}
-        lineBg={timeLineColor}
-      />
-    </TimeItemWrap>
-  );
-};
-
-const Bubble = ({ bg }: BubbleProp): JSX.Element => {
-  return (
-    <BubbleWrap bgColor={bg}>
+    <BubbleWrap
+      left={left || 0}
+      height={height || 0}
+      width={width || 0}
+      bgColor={bg}
+      padding={hr === 0 ? 4 : undefined}
+    >
       <CustomText
         numberOfLines={1}
         fontWeight="600"
         fontFamily={Fonts?.DMSansBold}
-        fontSize={18}
+        fontSize={hr === 0 ? 10 : 18}
       >
-        Go for a walk with dog
+        {text || ""}
       </CustomText>
       <CustomText
         fontWeight="400"
         color={Colors?.dark_grey}
         fontFamily={Fonts?.GraphikRegular}
-        fontSize={15}
+        fontSize={hr === 0 ? 12 : 15}
       >
-        9:00am - 10:00am
+        {startTime} - {endTime}
       </CustomText>
     </BubbleWrap>
   );
 };
 
-const AdgendaItem = ({
-  bubbleBgColor,
-  endDotColor,
-  timeLineColor,
-  startTime,
-  endTime,
-}: AdgendaItemProp): JSX.Element => {
+const TimeLineItem = ({
+  timeText,
+  isLast,
+  AdgendaData,
+}: TimeLineItemProps): JSX.Element => {
+  const isCurrentHour = AdgendaData?.filter(
+    (adgendaItem) =>
+      parseInt(adgendaItem?.startTime?.split(":")[0]) ===
+      parseInt(timeText?.split(":")[0], 10)
+  )?.[0];
+
   return (
-    <SpaceBetween style={{ height: 80, marginBottom: 16 }}>
-      <TimeItem
-        endTime={endTime}
-        startTime={startTime}
-        endDotColor={endDotColor}
-        timeLineColor={timeLineColor}
-      />
-      <View style={{ flex: 2.3 }}>
-        <Bubble bg={bubbleBgColor} />
-      </View>
+    <SpaceBetween style={{ height: 80 }}>
+      <Row>
+        {/* <View
+          style={{
+            height: 1,
+            width: "100%",
+            position: "absolute",
+            top: 0,
+            backgroundColor: "black",
+          }}
+        /> */}
+        {!isLast && <Line lineBg="red" height="100%" />}
+
+        <Dot />
+
+        <CustomText left={16} fontSize={15} fontFamily={Fonts?.GraphikRegular}>
+          {timeText}
+        </CustomText>
+      </Row>
+
+      {isCurrentHour && (
+        <View style={{ flex: 2.3 }}>
+          <Bubble
+            startTime={isCurrentHour?.startTime}
+            bg={Colors?.light_red}
+            endTime={isCurrentHour?.endTime}
+            text={isCurrentHour?.text}
+          />
+        </View>
+      )}
     </SpaceBetween>
   );
 };
 
 const AdgendaComponent: React.FC = (): JSX.Element => {
+  const twentyForHourTime = getTime();
+
+  const AdgendaData = [
+    { startTime: "00:00 AM", endTime: "01:30 AM", text: "Going For a walk" },
+    { startTime: "13:00 PM", endTime: "14:00 PM", text: "Going For a walk" },
+    { startTime: "03:00 AM", endTime: "04:59 AM", text: "Walking the Dog" },
+    {
+      startTime: "05:00 AM",
+      endTime: "06:00 AM",
+      text: "Getting Favour flowers",
+    },
+    {
+      startTime: "17:00 PM",
+      endTime: "18:00 PM",
+      text: "Getting Favour flowers",
+    },
+  ];
+
+  // const colorsArray = [
+  //   {
+  //     bubbleBgColor: Colors?.light_red,
+  //     timeLineColor: Colors?.tomato_red,
+  //     endDotColor: Colors?.blue,
+  //   },
+  //   {
+  //     bubbleBgColor: Colors?.light_blue,
+  //     timeLineColor: Colors?.blue,
+  //     endDotColor: Colors?.blue,
+  //   },
+  // ];
+
   return (
-    <View>
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_red}
-        timeLineColor={Colors?.tomato_red}
-        endDotColor={Colors?.blue}
-        startTime="9:00am"
-        endTime="10:00am"
-      />
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_blue}
-        timeLineColor={Colors?.blue}
-        endDotColor={Colors?.blue}
-        endTime="11:00am"
-      />
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_yellow}
-        timeLineColor={Colors?.lemon}
-        endDotColor={Colors?.lemon}
-        endTime="12:00pm"
-      />
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_red}
-        timeLineColor={Colors?.tomato_red}
-        endDotColor={Colors?.tomato_red}
-        endTime="1:00pm"
-      />
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_red}
-        timeLineColor={Colors?.tomato_red}
-        endDotColor={Colors?.tomato_red}
-        endTime="2:00pm"
-      />
-      <AdgendaItem
-        bubbleBgColor={Colors?.light_blue}
-        timeLineColor={Colors?.blue}
-        endDotColor={Colors?.blue}
-        endTime="3:00pm"
-      />
+    <View style={{ flex: 1 }}>
+      {twentyForHourTime?.map((time, index) => {
+        return (
+          <TimeLineItem
+            isLast={index === twentyForHourTime?.length - 1}
+            timeText={time}
+            key={`${time}-${index}`}
+            AdgendaData={AdgendaData}
+          />
+        );
+      })}
     </View>
   );
 };

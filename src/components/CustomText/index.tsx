@@ -36,7 +36,7 @@ const TextStyle = styled(Text)<{
 type CustomTextProp = {
   fontSize?: number;
   fontFamily?: string;
-  children: string;
+  children: any;
   fontWeight?: string;
   color?: string;
   top?: number;

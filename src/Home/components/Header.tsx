@@ -31,7 +31,7 @@ const Header = () => {
       <Row>
         <ProfileImage source={headShotImage} resizeMode="cover" />
         <CustomText
-          left="15"
+          left={15}
           fontFamily={Fonts.DMSansBold}
           fontWeight="700"
           fontSize={24}

@@ -83,7 +83,7 @@ const PremiumCard = (): JSX.Element => {
               top={7}
               fontFamily={Fonts.GraphikRegular}
               fontWeight="400"
-              style={{ lineHeight: "24px" }}
+              lineHeight={24}
               fontSize={17}
               color={Colors?.dark_grey_2}
             >

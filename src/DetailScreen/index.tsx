@@ -4,12 +4,14 @@ import Colors from "../constants/Colors";
 import DetailHeader from "./components/DetailHeader";
 import Schedule from "./components/Schedule";
 
-const Detail = ({ navigation }: any): JSX.Element => {
+const Detail = ({ navigation, route }: any): JSX.Element => {
+  const params = route?.params;
+
   return (
     <SafeAreaWrap safeAreaBg={Colors?.black} bg={Colors?.black}>
       <>
-        <DetailHeader navigation={navigation} />
-        <Schedule />
+        <DetailHeader navigation={navigation} params={params} />
+        <Schedule params={params} />
       </>
     </SafeAreaWrap>
   );

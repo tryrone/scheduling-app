@@ -1,5 +1,5 @@
 import { Animated, Dimensions, Modal } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import styled from "styled-components/native";
 import Colors from "../../constants/Colors";
 import { BlurView } from "expo-blur";
@@ -10,6 +10,8 @@ import Button from "../Button";
 import KeyboardShift from "../TextInput/keyoardAvoidingView";
 import CalenderModal from "./CalenderModal";
 import { AlarmSvg } from "../../../assets/svg";
+import moment from "moment";
+import { checkObjectValues } from "../../utils";
 
 const { height } = Dimensions.get("window");
 
@@ -25,6 +27,16 @@ const Wrapper = styled.View`
   flex: 1;
   justify-content: space-between;
   background-color: rgba(0, 0, 0, 0.3);
+`;
+
+const SpacedRow = styled.View<{
+  mt?: number;
+}>`
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: ${({ mt }) => mt || 0}px;
+  margin-bottom: 45px;
 `;
 
 const BlurWrap = styled(BlurView)`
@@ -44,13 +56,31 @@ type AddTaskModalProp = {
   setVisible: (val: boolean) => {};
 };
 
+type TaskDataProp = {
+  title: string;
+  date: string;
+  startTime: string;
+  end: string;
+  group: string;
+};
+
 const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
   const [calenderModalVisible, setCalenderModalVisible] = useState(false);
-  const [taskData, setTaskData] = useState({
-    title: "",
-    Date: "",
-    time: "",
-  });
+  const [error, setError] = useState("");
+  const [taskData, setTaskData] = useReducer(
+    (prev: TaskDataProp, next: any | TaskDataProp) => {
+      const newEvent = { ...prev, ...next };
+
+      return newEvent;
+    },
+    {
+      title: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+      group: "",
+    }
+  );
 
   const translateY = useRef(new Animated.Value(height)).current;
 
@@ -72,8 +102,35 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
       useNativeDriver: true,
     }).start();
     setTimeout(() => {
+      setError("");
+      setTaskData({
+        title: "",
+        date: "",
+        startTime: "",
+        endTime: "",
+        group: "",
+      });
       setVisible(false);
     }, 300);
+  };
+
+  const onSubmit = () => {
+    if (taskData?.endTime < taskData?.startTime) {
+      return setError("end time cannot be less that start time");
+    }
+    if (!checkObjectValues(taskData)) {
+      const payload = {
+        title: taskData?.title,
+        date: "",
+        startTime: "",
+        endTime: "",
+        group: taskData?.group,
+      };
+
+      console.log({ taskData });
+    } else {
+      setError("All fields must be filled");
+    }
   };
 
   return (
@@ -85,10 +142,6 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
           <Animated.View
             style={{
               transform: [{ translateY }],
-              // width: "100%",
-              // alignSelf: "flex-end",
-              // marginBottom: 20,
-              // flex: 1,
             }}
           >
             <Container style={{ zIndex: 4 }}>
@@ -102,32 +155,53 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
                 Input Task
               </CustomText>
 
-              <TextInput placeholder="Title" value="" />
+              <TextInput
+                placeholder="Title"
+                value={taskData?.title}
+                returnValue
+                handleChange={(e) => setTaskData({ title: e })}
+                key="title"
+              />
 
               <TextInput
                 onWrapPress={setCalenderModalVisible}
                 disabled
+                returnValue
                 placeholder="Date"
-                value=""
+                value={
+                  taskData?.date
+                    ? `${moment(taskData?.date).format("Do, MMMM YYYY")}`
+                    : ""
+                }
                 marginTop={16}
+                key="date"
               />
 
-              <CustomTimePicker
-                placeholder="e.g 12:00 pm"
-                onValueChange={(e) => {
-                  console.log({ e });
-                  // setFieldValue("cutoff_order_time", e);
-                }}
-                style={{ flex: 1 }}
-                top={10}
-                value={""}
-              />
+              <SpacedRow style={{ backgroundColor: "red" }} mt={10}>
+                <CustomTimePicker
+                  placeholder="Start Time"
+                  onValueChange={(e) => {
+                    setTaskData({ startTime: e });
+                  }}
+                  style={{ flex: 1 }}
+                  value={taskData?.startTime}
+                  key="startTime"
+                />
+                <CustomTimePicker
+                  placeholder="End Time"
+                  onValueChange={(e) => {
+                    setTaskData({ endTime: e });
+                  }}
+                  style={{ flex: 1, marginLeft: 10 }}
+                  value={taskData?.endTime}
+                  key="endTime"
+                />
+              </SpacedRow>
 
               <DropDown
-                placeholder="Select Task Type"
+                placeholder="Select Group"
                 onValueChange={(e) => {
-                  console.log({ e });
-                  // setFieldValue("deliveryType", e);
+                  setTaskData({ group: e });
                 }}
                 top={10}
                 style={{ marginBottom: 16 }}
@@ -139,13 +213,25 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
                     label: "Work",
                   },
                 ]}
-                value={""}
+                value={taskData?.group}
               />
+
+              {error?.length > 0 && (
+                <CustomText
+                  fontWeight="400"
+                  fontSize={14}
+                  fontFamily={Fonts?.DMSansMedium}
+                  color={Colors.error}
+                >
+                  {error}
+                </CustomText>
+              )}
 
               <Button
                 style={{ marginTop: 16 }}
                 text="Create Task"
-                disabled={false}
+                disabled={checkObjectValues(taskData)}
+                onPress={onSubmit}
                 bgColor={Colors?.black}
               />
             </Container>
@@ -153,6 +239,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
         </Wrapper>
         <CalenderModal
           visible={calenderModalVisible}
+          setDate={(val: any) => setTaskData({ date: val })}
           setVisible={setCalenderModalVisible}
         />
       </KeyboardShift>

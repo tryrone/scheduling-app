@@ -68,3 +68,26 @@ export function getCurrentWeekStartDay() {
   );
   return startDay;
 }
+
+export function checkObjectValues(obj: Record<string, any>) {
+  for (var key in obj) {
+    if (obj[key] === null || obj[key] === undefined || obj[key] === "") {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function returnCurrentWeek() {
+  var currentDate = new Date();
+  var day = currentDate.getDay();
+  var diff = currentDate.getDate() - day + (day == 0 ? -6 : 1);
+
+  var sunday = new Date(currentDate.setDate(diff));
+  var currentWeek = [sunday];
+
+  for (var i = 1; i < 7; i++) {
+    currentWeek.push(new Date(sunday.getTime() + i * 24 * 60 * 60 * 1000));
+  }
+  return currentWeek;
+}

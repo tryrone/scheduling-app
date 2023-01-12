@@ -31,7 +31,7 @@ const BackWrap = styled.TouchableOpacity`
   bottom: 6px;
 `;
 
-const DetailHeader = ({ navigation }: any) => {
+const DetailHeader = ({ navigation, params }: any) => {
   return (
     <Container>
       <SpaceBetween>
@@ -47,7 +47,7 @@ const DetailHeader = ({ navigation }: any) => {
               fontWeight="700"
               color={Colors?.white}
             >
-              Personal tasks
+              {params?.title} tasks
             </CustomText>
             <CustomText
               fontSize={16}

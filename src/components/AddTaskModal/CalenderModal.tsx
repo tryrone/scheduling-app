@@ -34,13 +34,18 @@ const CalenderContainer = styled.View`
 type CalenderModalProps = {
   visible: boolean;
   setVisible: (e: boolean) => void;
+  setDate: (e: any) => void;
 };
 
-const CalenderModal = ({ visible, setVisible }: CalenderModalProps) => {
+const CalenderModal = ({
+  visible,
+  setVisible,
+  setDate,
+}: CalenderModalProps) => {
   // const calanderRef = useRef();
 
   const onDateChange = (date: any) => {
-    console.log({ date });
+    setDate(date);
     setVisible(false);
   };
 

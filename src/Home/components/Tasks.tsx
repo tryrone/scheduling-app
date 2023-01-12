@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Key } from "react";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import styled from "styled-components/native";
@@ -71,6 +71,7 @@ type TaskItemProps = {
   textColor: string;
   doneTextColor?: string;
   lightPillColor: string;
+  onPress: (() => void) | undefined;
 };
 
 const TaskItem = ({
@@ -80,9 +81,10 @@ const TaskItem = ({
   textColor,
   doneTextColor = textColor,
   lightPillColor,
+  onPress,
 }: TaskItemProps): JSX.Element => {
   return (
-    <ItemWrap bgColor={bgColor}>
+    <ItemWrap bgColor={bgColor} onPress={onPress}>
       <IconImage source={iconImage} resizeMode="contain" />
       <CustomText
         color={Colors?.black}
@@ -123,15 +125,12 @@ const TaskItem = ({
 
 type TaskBtnProp = {
   navigation: {
-    navigate: (prop: string) => {};
+    navigate: (prop: string, args?: Record<string, string>) => {};
   };
   setAddTaskModalVisible: (e: boolean) => void;
 };
 
-const AddTaskBtn = ({
-  navigation,
-  setAddTaskModalVisible,
-}: TaskBtnProp): JSX.Element => {
+const AddTaskBtn = ({ setAddTaskModalVisible }: any): JSX.Element => {
   return (
     <AddTaskWrap onPress={() => setAddTaskModalVisible(true)}>
       <Row>
@@ -184,6 +183,13 @@ const Tasks = ({
           doneTextColor={Colors?.lemon}
           lightPillColor={Colors?.light_yellow_2}
           iconImage={orangeUser}
+          onPress={() =>
+            navigation?.navigate("Detail", {
+              dotColor: Colors?.lemon,
+              bgColor: Colors?.light_yellow,
+              title: "Personal",
+            })
+          }
         />
         <TaskItem
           bgColor={Colors?.light_red}
@@ -191,6 +197,13 @@ const Tasks = ({
           title="Work"
           lightPillColor={Colors?.light_red_2}
           iconImage={redBag}
+          onPress={() =>
+            navigation?.navigate("Detail", {
+              dotColor: Colors?.tomato_red,
+              bgColor: Colors?.light_red,
+              title: "Work",
+            })
+          }
         />
         <TaskItem
           bgColor={Colors?.light_blue}
@@ -198,6 +211,13 @@ const Tasks = ({
           title="Health"
           lightPillColor={Colors?.light_blue_2}
           iconImage={blueHeart}
+          onPress={() =>
+            navigation?.navigate("Detail", {
+              dotColor: Colors?.blue,
+              bgColor: Colors?.light_blue,
+              title: "Health",
+            })
+          }
         />
 
         <AddTaskBtn

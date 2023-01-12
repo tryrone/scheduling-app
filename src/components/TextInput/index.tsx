@@ -38,7 +38,7 @@ const Wrapper = styled.View<{
   z-index: 4;
 `;
 
-const DisabledView = styled.View<{
+const DisabledView = styled.Pressable<{
   width?: number;
   marginTop?: number;
 }>`
@@ -165,12 +165,15 @@ const TextInput = ({
   }, [errors]);
 
   return (
-    <Pressable
-      onPress={() => {
-        onWrapPress && onWrapPress(true);
-      }}
-    >
-      {disabled && <DisabledView marginTop={marginTop} />}
+    <Pressable>
+      {disabled && (
+        <DisabledView
+          onPress={() => {
+            onWrapPress && onWrapPress(true);
+          }}
+          marginTop={marginTop}
+        />
+      )}
       <Wrapper active={focused} marginTop={marginTop}>
         {showNaira && (
           <CustomText
@@ -229,7 +232,7 @@ type CustomTimePickerProps = {
   placeholder?: string;
   errors?: string;
   name?: string;
-  style?: {};
+  style?: ViewStyle;
   showTimeIcon?: boolean;
   disabled?: boolean;
 };

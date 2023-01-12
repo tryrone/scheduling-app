@@ -1,11 +1,17 @@
-import React from "react";
-import { View, ScrollView, Dimensions } from "react-native";
+import moment from "moment";
+import React, { useState } from "react";
+import { View, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { ChevDownSvg } from "../../../assets/svg";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import Fonts from "../../constants/Fonts";
-import { AdgendaDataItem, calculateData, getTime } from "../../utils";
+import {
+  AdgendaDataItem,
+  calculateData,
+  getTime,
+  returnCurrentWeek,
+} from "../../utils";
 
 const { width: windowWidth } = Dimensions?.get("window");
 
@@ -88,12 +94,15 @@ type WeekDayProp = {
   dayText: string;
   dayNumber: string;
   isSelected: boolean;
+  onPress: (() => void) | undefined;
 };
 
 type TimeLineItemProps = {
   timeText: string;
   isLast: boolean;
   AdgendaData: AdgendaDataItem[];
+  dotColor: string;
+  bubbleColor: string;
 };
 
 type BubbleProps = {
@@ -107,9 +116,11 @@ const WeekDay = ({
   isSelected = false,
   dayNumber,
   dayText,
+  onPress,
 }: WeekDayProp): JSX.Element => {
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
       style={{
         alignItems: "center",
         backgroundColor: isSelected ? Colors?.light_grey_2 : Colors?.white,
@@ -135,20 +146,29 @@ const WeekDay = ({
       >
         {dayNumber}
       </CustomText>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const WeekDaysContainer: React.FC = (): JSX.Element => {
+  const week = returnCurrentWeek();
+  const [selectedDay, setSelectedDay] = useState(moment().format("D-MMM-YYYY"));
   return (
     <SpaceBetween>
-      <WeekDay dayNumber="24" dayText="Sun" isSelected={false} />
-      <WeekDay dayNumber="25" dayText="Mon" isSelected={false} />
-      <WeekDay dayNumber="26" dayText="Tue" isSelected={false} />
-      <WeekDay dayNumber="27" dayText="Wed" isSelected={false} />
-      <WeekDay dayNumber="28" dayText="Thu" isSelected />
-      <WeekDay dayNumber="29" dayText="Fri" isSelected={false} />
-      <WeekDay dayNumber="30" dayText="Sat" isSelected={false} />
+      {week?.map((day, index) => {
+        const isToday = selectedDay === moment(day).format("D-MMM-YYYY");
+        return (
+          <WeekDay
+            onPress={() => {
+              setSelectedDay(moment(day).format("D-MMM-YYYY"));
+            }}
+            key={`${day}${index}`}
+            dayNumber={moment(day).format("D")}
+            dayText={moment(day).format("ddd")}
+            isSelected={isToday}
+          />
+        );
+      })}
     </SpaceBetween>
   );
 };
@@ -193,7 +213,7 @@ const Bubble = ({ startTime, endTime, text, bg }: BubbleProps) => {
   const startMin = startTime ? parseInt(startTime.split(":")[1]) : 0;
   const endMin = endTime ? parseInt(endTime.split(":")[1]) : 0;
   const left = windowWidth * 0.12;
-  const width = (endHour + endMin - (startHour + startMin)) * 240;
+  const width = windowWidth * 0.61;
 
   const { height } = calculateData({
     startHr: startHour,
@@ -236,6 +256,8 @@ const TimeLineItem = ({
   timeText,
   isLast,
   AdgendaData,
+  bubbleColor,
+  dotColor,
 }: TimeLineItemProps): JSX.Element => {
   const isCurrentHour = AdgendaData?.filter(
     (adgendaItem) =>
@@ -246,18 +268,9 @@ const TimeLineItem = ({
   return (
     <SpaceBetween style={{ height: 80 }}>
       <Row>
-        {/* <View
-          style={{
-            height: 1,
-            width: "100%",
-            position: "absolute",
-            top: 0,
-            backgroundColor: "black",
-          }}
-        /> */}
-        {!isLast && <Line lineBg="red" height="100%" />}
+        {!isLast && <Line lineBg={dotColor} height="100%" />}
 
-        <Dot />
+        <Dot bgColor={dotColor} />
 
         <CustomText left={16} fontSize={15} fontFamily={Fonts?.GraphikRegular}>
           {timeText}
@@ -268,7 +281,7 @@ const TimeLineItem = ({
         <View style={{ flex: 2.3 }}>
           <Bubble
             startTime={isCurrentHour?.startTime}
-            bg={Colors?.light_red}
+            bg={bubbleColor}
             endTime={isCurrentHour?.endTime}
             text={isCurrentHour?.text}
           />
@@ -278,8 +291,9 @@ const TimeLineItem = ({
   );
 };
 
-const AdgendaComponent: React.FC = (): JSX.Element => {
+const AdgendaComponent = (params: any): JSX.Element => {
   const twentyForHourTime = getTime();
+  const newParams = params?.params?.params;
 
   const AdgendaData = [
     { startTime: "00:00 AM", endTime: "01:30 AM", text: "Going For a walk" },
@@ -297,19 +311,6 @@ const AdgendaComponent: React.FC = (): JSX.Element => {
     },
   ];
 
-  // const colorsArray = [
-  //   {
-  //     bubbleBgColor: Colors?.light_red,
-  //     timeLineColor: Colors?.tomato_red,
-  //     endDotColor: Colors?.blue,
-  //   },
-  //   {
-  //     bubbleBgColor: Colors?.light_blue,
-  //     timeLineColor: Colors?.blue,
-  //     endDotColor: Colors?.blue,
-  //   },
-  // ];
-
   return (
     <View style={{ flex: 1 }}>
       {twentyForHourTime?.map((time, index) => {
@@ -319,6 +320,8 @@ const AdgendaComponent: React.FC = (): JSX.Element => {
             timeText={time}
             key={`${time}-${index}`}
             AdgendaData={AdgendaData}
+            dotColor={newParams?.dotColor}
+            bubbleColor={newParams?.bgColor}
           />
         );
       })}
@@ -326,7 +329,7 @@ const AdgendaComponent: React.FC = (): JSX.Element => {
   );
 };
 
-const Schedule = (): JSX.Element => {
+const Schedule = (params: any): JSX.Element => {
   return (
     <Container>
       <WeekDaysContainer />
@@ -337,7 +340,7 @@ const Schedule = (): JSX.Element => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <AdgendaComponent />
+        <AdgendaComponent params={params} />
       </ScrollView>
     </Container>
   );

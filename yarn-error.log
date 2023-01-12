@@ -1,30 +1,21 @@
 Arguments: 
-  /opt/homebrew/Cellar/node/19.3.0/bin/node /Users/tegaoboraruvwe/.yarn/bin/yarnpkg add react-native-calenders
+  /opt/homebrew/Cellar/node/19.4.0/bin/node /Users/tegaoboraruvwe/.yarn/bin/yarn.js add @shopify/react-native-skia
 
 PATH: 
-  /Users/tegaoboraruvwe/.yarn/bin:/Users/tegaoboraruvwe/.config/yarn/global/node_modules/.bin:~/Library/Android/sdk/platform-tools:/Users/tegaoboraruvwe/.bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/.fig/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/Library/Android/sdk/platform-tools
+  /opt/homebrew/lib/ruby/gems/3.1.0/bin:/opt/homebrew/opt/ruby@3.1/bin:/opt/homebrew/lib/ruby/gems/3.1.0/bin:/opt/homebrew/opt/ruby@3.1/bin:/Users/tegaoboraruvwe/.yarn/bin:/Users/tegaoboraruvwe/.config/yarn/global/node_modules/.bin:~/Library/Android/sdk/platform-tools:/Users/tegaoboraruvwe/.bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/.fig/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/.local/bin:/Users/tegaoboraruvwe/Library/Android/sdk/platform-tools
 
 Yarn version: 
   1.22.19
 
 Node version: 
-  19.3.0
+  19.4.0
 
 Platform: 
   darwin arm64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/react-native-calenders: Not found
-      at params.callback [as _callback] (/Users/tegaoboraruvwe/.yarn/lib/cli.js:66145:18)
-      at self.callback (/Users/tegaoboraruvwe/.yarn/lib/cli.js:140890:22)
-      at Request.emit (node:events:513:28)
-      at Request.<anonymous> (/Users/tegaoboraruvwe/.yarn/lib/cli.js:141862:10)
-      at Request.emit (node:events:513:28)
-      at IncomingMessage.<anonymous> (/Users/tegaoboraruvwe/.yarn/lib/cli.js:141784:12)
-      at Object.onceWrapper (node:events:627:28)
-      at IncomingMessage.emit (node:events:525:35)
-      at endReadableNT (node:internal/streams/readable:1359:12)
-      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:107:26)
 
 npm manifest: 
   {
@@ -44,6 +35,7 @@ npm manifest:
       "expo": "~47.0.9",
       "expo-font": "^11.0.1",
       "expo-status-bar": "~1.4.2",
+      "moment": "^2.29.4",
       "react": "18.1.0",
       "react-dom": "18.1.0",
       "react-native": "0.70.5",
@@ -5269,6 +5261,11 @@ Lockfile:
     version "1.0.4"
     resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
     integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+  
+  moment@^2.29.4:
+    version "2.29.4"
+    resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+    integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
   
   ms@2.0.0:
     version "2.0.0"

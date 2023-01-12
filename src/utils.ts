@@ -48,3 +48,23 @@ export const calculateData = (task: CalculateDataProps): CalculatedData => {
   height = height + (bottomExtra - topExtra);
   return { height };
 };
+
+export function getCurrentWeekEndDay() {
+  var date = new Date();
+  var endDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + (7 - date.getUTCDay())
+  );
+  return endDay;
+}
+
+export function getCurrentWeekStartDay() {
+  var date = new Date();
+  var startDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() - date.getUTCDay() + 1
+  );
+  return startDay;
+}

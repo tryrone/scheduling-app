@@ -125,11 +125,15 @@ type TaskBtnProp = {
   navigation: {
     navigate: (prop: string) => {};
   };
+  setAddTaskModalVisible: (e: boolean) => void;
 };
 
-const AddTaskBtn = ({ navigation }: TaskBtnProp): JSX.Element => {
+const AddTaskBtn = ({
+  navigation,
+  setAddTaskModalVisible,
+}: TaskBtnProp): JSX.Element => {
   return (
-    <AddTaskWrap onPress={() => navigation?.navigate("Detail")}>
+    <AddTaskWrap onPress={() => setAddTaskModalVisible(true)}>
       <Row>
         <CustomText
           color={Colors?.black}
@@ -157,7 +161,10 @@ const AddTaskBtn = ({ navigation }: TaskBtnProp): JSX.Element => {
   );
 };
 
-const Tasks = ({ navigation }: TaskBtnProp): JSX.Element => {
+const Tasks = ({
+  navigation,
+  setAddTaskModalVisible,
+}: TaskBtnProp): JSX.Element => {
   return (
     <Container>
       <CustomText
@@ -193,7 +200,10 @@ const Tasks = ({ navigation }: TaskBtnProp): JSX.Element => {
           iconImage={blueHeart}
         />
 
-        <AddTaskBtn navigation={navigation} />
+        <AddTaskBtn
+          navigation={navigation}
+          setAddTaskModalVisible={setAddTaskModalVisible}
+        />
       </RowWrapped>
     </Container>
   );

@@ -9,9 +9,11 @@ import Fonts from "../../constants/Fonts";
 import Button from "../Button";
 import KeyboardShift from "../TextInput/keyoardAvoidingView";
 import CalenderModal from "./CalenderModal";
-import { AlarmSvg } from "../../../assets/svg";
 import moment from "moment";
-import { checkObjectValues } from "../../utils";
+import { checkObjectValues, getLocalData, storeData } from "../../utils";
+import { getFirestore } from "firebase/firestore";
+import { app } from "../../../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 const { height } = Dimensions.get("window");
 
@@ -56,11 +58,12 @@ type AddTaskModalProp = {
   setVisible: (val: boolean) => {};
 };
 
-type TaskDataProp = {
+export type TaskDataProp = {
+  id?: string;
   title: string;
   date: string;
   startTime: string;
-  end: string;
+  endTime: string;
   group: string;
 };
 
@@ -81,6 +84,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
       group: "",
     }
   );
+  const db = getFirestore(app);
 
   const translateY = useRef(new Animated.Value(height)).current;
 
@@ -114,20 +118,57 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
     }, 300);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (taskData?.endTime < taskData?.startTime) {
       return setError("end time cannot be less that start time");
     }
     if (!checkObjectValues(taskData)) {
-      const payload = {
-        title: taskData?.title,
-        date: "",
-        startTime: "",
-        endTime: "",
-        group: taskData?.group,
-      };
+      try {
+        const docRef = await addDoc(collection(db, "tasks"), {
+          date: `${taskData?.date}`,
+          endTime: `${moment(taskData?.endTime).format("H:mm A")}`,
+          group: taskData?.group,
+          startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
+          title: taskData?.title,
+        });
+        const localData = await getLocalData();
+        if (!localData) {
+          await storeData([
+            {
+              date: `${taskData?.date}`,
+              endTime: `${moment(taskData?.endTime).format("H:mm A")}`,
+              group: taskData?.group,
+              startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
+              title: taskData?.title,
+            },
+          ]);
+        } else {
+          await storeData([
+            ...localData,
+            {
+              date: `${taskData?.date}`,
+              endTime: `${moment(taskData?.endTime).format("H:mm A")}`,
+              group: taskData?.group,
+              startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
+              title: taskData?.title,
+            },
+          ]);
+        }
 
-      console.log({ taskData });
+        setError("");
+        setTaskData({
+          title: "",
+          date: "",
+          startTime: "",
+          endTime: "",
+          group: "",
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+
+      // console.log({ taskData });
     } else {
       setError("All fields must be filled");
     }

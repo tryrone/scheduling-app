@@ -5,6 +5,8 @@ import { WhiteChevLeft, WhiteMoreSvg } from "../../../assets/svg";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import Fonts from "../../constants/Fonts";
+import appLogger from "../../logger";
+import { returnDoneAndUpcomingTasks } from "../../utils";
 
 const Row = styled.View`
   flex-direction: row;
@@ -32,6 +34,10 @@ const BackWrap = styled.TouchableOpacity`
 `;
 
 const DetailHeader = ({ navigation, params }: any) => {
+  const { upcomingTasks } = returnDoneAndUpcomingTasks(
+    params?.dataList,
+    params?.title
+  );
   return (
     <Container>
       <SpaceBetween>
@@ -56,7 +62,8 @@ const DetailHeader = ({ navigation, params }: any) => {
               fontWeight="600"
               color={Colors?.grey_3}
             >
-              You have 3 new tasks for today!
+              You have {upcomingTasks?.length} upcoming task
+              {upcomingTasks?.length === 1 ? "" : "s"} today!
             </CustomText>
           </View>
         </Row>

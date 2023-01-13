@@ -5,6 +5,13 @@ import styled from "styled-components/native";
 import Fonts from "../../constants/Fonts";
 import { blueHeart, orangeUser, redBag } from "../../../assets/images";
 import { NavigationProp } from "@react-navigation/native";
+import { TaskDataProp } from "../../components/AddTaskModal";
+import {
+  Groups,
+  returnDoneAndUpcomingTasks,
+  returnGroupData,
+} from "../../utils";
+import appLogger from "../../logger";
 
 const Container = styled.View`
   padding-horizontal: 16px;
@@ -72,6 +79,8 @@ type TaskItemProps = {
   doneTextColor?: string;
   lightPillColor: string;
   onPress: (() => void) | undefined;
+  pastTasks?: number;
+  upcomingTasks?: number;
 };
 
 const TaskItem = ({
@@ -82,6 +91,8 @@ const TaskItem = ({
   doneTextColor = textColor,
   lightPillColor,
   onPress,
+  pastTasks,
+  upcomingTasks,
 }: TaskItemProps): JSX.Element => {
   return (
     <ItemWrap bgColor={bgColor} onPress={onPress}>
@@ -97,27 +108,31 @@ const TaskItem = ({
         {title}
       </CustomText>
       <Row>
-        <Pill bgColor={lightPillColor}>
-          <CustomText
-            color={textColor}
-            fontSize={14}
-            fontFamily={Fonts?.DMSansBold}
-            fontWeight="700"
-          >
-            3 left
-          </CustomText>
-        </Pill>
+        {upcomingTasks !== undefined && (
+          <Pill bgColor={lightPillColor}>
+            <CustomText
+              color={textColor}
+              fontSize={14}
+              fontFamily={Fonts?.DMSansBold}
+              fontWeight="700"
+            >
+              {upcomingTasks} left
+            </CustomText>
+          </Pill>
+        )}
 
-        <Pill bgColor={Colors?.white}>
-          <CustomText
-            color={doneTextColor}
-            fontSize={14}
-            fontFamily={Fonts?.DMSansBold}
-            fontWeight="700"
-          >
-            1 done
-          </CustomText>
-        </Pill>
+        {pastTasks !== undefined && (
+          <Pill bgColor={Colors?.white}>
+            <CustomText
+              color={doneTextColor}
+              fontSize={14}
+              fontFamily={Fonts?.DMSansBold}
+              fontWeight="700"
+            >
+              {pastTasks} done
+            </CustomText>
+          </Pill>
+        )}
       </Row>
     </ItemWrap>
   );
@@ -125,9 +140,10 @@ const TaskItem = ({
 
 type TaskBtnProp = {
   navigation: {
-    navigate: (prop: string, args?: Record<string, string>) => {};
+    navigate: (prop: string, args?: Record<string, any>) => {};
   };
   setAddTaskModalVisible: (e: boolean) => void;
+  currentWeekData: TaskDataProp[];
 };
 
 const AddTaskBtn = ({ setAddTaskModalVisible }: any): JSX.Element => {
@@ -163,7 +179,21 @@ const AddTaskBtn = ({ setAddTaskModalVisible }: any): JSX.Element => {
 const Tasks = ({
   navigation,
   setAddTaskModalVisible,
+  currentWeekData,
 }: TaskBtnProp): JSX.Element => {
+  const personalData = returnGroupData(currentWeekData, Groups.Personal);
+  const workData = returnGroupData(currentWeekData, Groups.Work);
+  const healthData = returnGroupData(currentWeekData, Groups.Health);
+
+  const { pastTasks: personalPastTasks, upcomingTasks: personalUpcomingTasks } =
+    returnDoneAndUpcomingTasks(currentWeekData, Groups.Personal);
+
+  const { pastTasks: workPastTasks, upcomingTasks: workUpcomingTasks } =
+    returnDoneAndUpcomingTasks(currentWeekData, Groups.Work);
+
+  const { pastTasks: healthPastTasks, upcomingTasks: healthUpcomingTasks } =
+    returnDoneAndUpcomingTasks(currentWeekData, Groups.Health);
+
   return (
     <Container>
       <CustomText
@@ -183,11 +213,14 @@ const Tasks = ({
           doneTextColor={Colors?.lemon}
           lightPillColor={Colors?.light_yellow_2}
           iconImage={orangeUser}
+          pastTasks={personalPastTasks?.length}
+          upcomingTasks={personalUpcomingTasks?.length}
           onPress={() =>
             navigation?.navigate("Detail", {
               dotColor: Colors?.lemon,
               bgColor: Colors?.light_yellow,
               title: "Personal",
+              dataList: personalData,
             })
           }
         />
@@ -197,11 +230,14 @@ const Tasks = ({
           title="Work"
           lightPillColor={Colors?.light_red_2}
           iconImage={redBag}
+          pastTasks={workPastTasks?.length}
+          upcomingTasks={workUpcomingTasks?.length}
           onPress={() =>
             navigation?.navigate("Detail", {
               dotColor: Colors?.tomato_red,
               bgColor: Colors?.light_red,
               title: "Work",
+              dataList: workData,
             })
           }
         />
@@ -211,11 +247,14 @@ const Tasks = ({
           title="Health"
           lightPillColor={Colors?.light_blue_2}
           iconImage={blueHeart}
+          pastTasks={healthPastTasks?.length}
+          upcomingTasks={healthUpcomingTasks?.length}
           onPress={() =>
             navigation?.navigate("Detail", {
               dotColor: Colors?.blue,
               bgColor: Colors?.light_blue,
               title: "Health",
+              dataList: healthData,
             })
           }
         />

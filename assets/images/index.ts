@@ -4,3 +4,6 @@ export const headShotImage = require("./headshot.jpeg");
 export const orangeUser = require("./orange-user.png");
 export const redBag = require("./bag.png");
 export const blueHeart = require("./heart.png");
+export const twitterIcon = require("./twitter.png");
+export const githubIcon = require("./github.png");
+export const googleIcon = require("./google.png");

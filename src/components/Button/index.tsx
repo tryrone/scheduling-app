@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import {ActivityIndicator, Platform} from 'react-native';
-import React from 'react';
-import Colors from '../../constants/Colors';
-import styled from 'styled-components/native';
-import CustomText from '../CustomText';
-import Fonts from '../../constants/Fonts';
+import { ActivityIndicator, Platform, ViewStyle } from "react-native";
+import React from "react";
+import Colors from "../../constants/Colors";
+import styled from "styled-components/native";
+import CustomText from "../CustomText";
+import Fonts from "../../constants/Fonts";
 
 const BtnWrap = styled.TouchableOpacity<{
   width?: string;
@@ -14,13 +14,13 @@ const BtnWrap = styled.TouchableOpacity<{
   jc?: string;
   customStyle?: {} | null;
 }>`
-  width: ${props => props.width};
-  height: ${props => props.height};
-  background-color: ${props => props.bgColor};
-  border-radius: ${props => props.borderRadius};
-  justify-content: ${props => props?.jc || 'center'};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  background-color: ${(props) => props.bgColor};
+  border-radius: ${(props) => props.borderRadius};
+  justify-content: ${(props) => props?.jc || "center"};
   align-items: center;
-  ${props => props.customStyle};
+  ${(props) => props.customStyle};
   z-index: 1;
 `;
 
@@ -32,14 +32,14 @@ const ViewWrap = styled.View<{
   jc?: string;
   customStyle?: {} | null;
 }>`
-  width: ${props => props.width};
-  height: ${props => props.height};
-  background-color: ${props => props.bgColor};
-  border-radius: ${props => props.borderRadius};
-  justify-content: ${props => props?.jc || 'center'};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  background-color: ${(props) => props.bgColor};
+  border-radius: ${(props) => props.borderRadius};
+  justify-content: ${(props) => props?.jc || "center"};
   align-items: center;
-  ${props => props.customStyle};
-  padding-top: ${Platform.OS === 'ios' ? '10px' : '0px'};
+  ${(props) => props.customStyle};
+  padding-top: ${Platform.OS === "ios" ? "10px" : "0px"};
   z-index: 1;
 `;
 
@@ -51,14 +51,14 @@ const DisabledWrap = styled.View<{
   jc?: string;
   customStyle?: {} | null;
 }>`
-  width: ${props => props.width};
-  height: ${props => props.height};
-  background-color: ${props => props.bgColor};
-  border-radius: ${props => props.borderRadius};
-  justify-content: ${props => props?.jc || 'center'};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  background-color: ${(props) => props.bgColor};
+  border-radius: ${(props) => props.borderRadius};
+  justify-content: ${(props) => props?.jc || "center"};
   align-items: center;
-  ${props => props.customStyle};
-  padding-top: ${Platform.OS === 'ios' ? '10px' : '0px'};
+  ${(props) => props.customStyle};
+  padding-top: ${Platform.OS === "ios" ? "10px" : "0px"};
   position: absolute;
   bottom: 0px;
   z-index: 3;
@@ -73,12 +73,12 @@ type ButtonProps = {
   text: string;
   bgColor?: string;
   textColor?: string;
-  fontSize?: string;
   width?: string;
   height?: string;
   borderRadius?: string;
   jc?: string;
-  style?: {} | null;
+  style?: ViewStyle;
+  btnStyle?: ViewStyle;
   loading?: boolean;
   disabled?: boolean;
   textSize?: number;
@@ -86,24 +86,27 @@ type ButtonProps = {
   iconRight?: boolean;
   fontWeight?: string;
   onPress?: any;
+  fontFamily?: string;
 };
 
 const Button = ({
-  text = '',
+  text = "",
   bgColor = Colors.primary,
   textColor = Colors.white,
-  width = '100%',
-  height = '56px',
-  borderRadius = '80px',
-  jc = 'center',
+  width = "100%",
+  height = "56px",
+  borderRadius = "80px",
+  jc = "center",
   style,
   loading = false,
   disabled = false,
   textSize = 14,
   icon = null,
-  iconRight = true,
+  iconRight = false,
   fontWeight,
   onPress = () => {},
+  btnStyle,
+  fontFamily = Fonts?.GraphikRegular,
 }: ButtonProps) => {
   return (
     <>
@@ -114,13 +117,14 @@ const Button = ({
           style={style}
           borderRadius={borderRadius}
           jc={jc}
-          bgColor={bgColor}>
+          bgColor={bgColor}
+        >
           {loading ? (
             <ActivityIndicator
               style={{
-                alignSelf: 'center',
-                position: 'relative',
-                top: Platform.OS === 'ios' ? -5 : 0,
+                alignSelf: "center",
+                position: "relative",
+                top: Platform.OS === "ios" ? -5 : 0,
               }}
               size="small"
               color={Colors.white}
@@ -129,18 +133,19 @@ const Button = ({
             <CustomText
               color={textColor}
               align="center"
-              top={Platform.OS === 'ios' ? -10 : 0}
-              fontWeight={fontWeight ? fontWeight : '400'}
-              fontFamily={Fonts?.DMSansRegular}
-              fontSize={textSize}>
+              top={Platform.OS === "ios" ? -10 : 0}
+              fontWeight={fontWeight ? fontWeight : "400"}
+              fontFamily={Fonts?.GraphikRegular}
+              fontSize={textSize}
+            >
               {text}
             </CustomText>
           )}
           <DisabledWrap
             borderRadius={borderRadius}
-            width={'100%'}
+            width={"100%"}
             height={height}
-            bgColor={'rgba(255,255,255, 0.4)'}
+            bgColor={"rgba(255,255,255, 0.4)"}
           />
         </ViewWrap>
       ) : (
@@ -150,11 +155,13 @@ const Button = ({
           customStyle={style}
           borderRadius={borderRadius}
           jc={jc}
+          style={btnStyle}
           bgColor={bgColor}
-          onPress={onPress}>
+          onPress={onPress}
+        >
           {loading ? (
             <ActivityIndicator
-              style={{alignSelf: 'center'}}
+              style={{ alignSelf: "center" }}
               size="small"
               color={Colors.white}
             />
@@ -164,9 +171,10 @@ const Button = ({
               <CustomText
                 color={textColor}
                 align="center"
-                fontWeight={fontWeight ? fontWeight : '400'}
-                fontFamily={Fonts?.DMSansRegular}
-                fontSize={textSize}>
+                fontWeight={fontWeight ? fontWeight : "400"}
+                fontFamily={fontFamily}
+                fontSize={textSize}
+              >
                 {text}
               </CustomText>
               {icon && iconRight && icon}

@@ -1,0 +1,13 @@
+{
+  "build": {
+    "prod": {
+      "releaseChannel": "prod"
+    },
+    "staging": {
+      "releaseChannel": "staging"
+    },
+    "dev": {
+      "releaseChannel": "local"
+    }
+  }
+}

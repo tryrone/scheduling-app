@@ -1,7 +1,6 @@
 import { TaskDataProp } from "./components/AddTaskModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import appLogger from "./logger";
-import moment from "moment";
 
 export const getTime = (): string[] => {
   let time = [];
@@ -191,4 +190,26 @@ export const returnDoneAndUpcomingTasks = (
   });
 
   return { pastTasks, upcomingTasks };
+};
+
+export const storeLocalLoginData = async (value: Record<string, string>) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem("@login_data", jsonValue);
+    return true;
+  } catch (e) {
+    // saving error
+    appLogger.info("error storing data", e);
+    return false;
+  }
+};
+
+export const getLocalDeviceData = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem("@login_data");
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+    appLogger.info("error reading data", e);
+  }
 };

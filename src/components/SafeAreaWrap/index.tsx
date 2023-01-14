@@ -5,7 +5,7 @@ import Colors from "../../constants/Colors";
 
 type SafeAreaProp = {
   children: React.ReactNode;
-  style?: ViewStyle | null;
+  style?: ViewStyle;
   bg?: string;
   height?: string;
   width?: string;

@@ -28,4 +28,6 @@ export default {
   grey_green: "#E7EEEC",
   inputGreyBg: "#F7F7F7",
   green_4: "#038B5C",
+  blue_100: "#F0F3FB",
+  blue_200: "#50abf1",
 };

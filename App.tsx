@@ -8,6 +8,8 @@ import { PlusIcon } from "./assets/svg";
 import "react-native-gesture-handler";
 import { createStackNavigator } from "@react-navigation/stack";
 import Detail from "./src/DetailScreen";
+import Login from "./src/Login";
+import * as Linking from "expo-linking";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,6 +48,9 @@ const AddBtn = () => {
 const HomeStack = createStackNavigator();
 
 export default function App() {
+  const prefix = Linking.createURL("/");
+  const Stack = createStackNavigator();
+
   const [fontsLoaded] = useFonts({
     "Graphik-Medium": require("./assets/fonts/Graphik-Medium.otf"),
     "Graphik-Regular": require("./assets/fonts/Graphik-Regular.otf"),
@@ -71,8 +76,8 @@ export default function App() {
     );
   };
 
-  return (
-    <NavigationContainer>
+  const AuthenticatedStack = () => {
+    return (
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
@@ -135,6 +140,24 @@ export default function App() {
           }}
         />
       </Tab.Navigator>
+    );
+  };
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Login" component={Login} />
+
+        <Stack.Screen
+          name="AuthenticatedStack"
+          component={AuthenticatedStack}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

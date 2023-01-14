@@ -10,6 +10,7 @@ import CalenderPrev from "./calender_prev.svg";
 import ClockSvg from "./Clock.svg";
 import AlarmSvg from "./alarm.svg";
 import SelectIconSvg from "./select_Icon.svg";
+import AppIconSvg from "./appIcon.svg";
 
 export {
   PlusIcon,
@@ -24,4 +25,5 @@ export {
   ClockSvg,
   AlarmSvg,
   SelectIconSvg,
+  AppIconSvg,
 };

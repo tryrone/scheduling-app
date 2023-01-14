@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { View, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { ChevDownSvg } from "../../../assets/svg";
+import { TaskDataProp } from "../../components/AddTaskModal";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import Fonts from "../../constants/Fonts";
+import appLogger from "../../logger";
 import {
   AdgendaDataItem,
   calculateData,
@@ -112,6 +114,16 @@ type BubbleProps = {
   bg: string;
 };
 
+type WeekDaysContainerProps = {
+  selectedDay: string;
+  setSelectedDay: (val: any) => void;
+};
+
+type AdgendaComponentProps = {
+  params: any;
+  schedule: TaskDataProp[];
+};
+
 const WeekDay = ({
   isSelected = false,
   dayNumber,
@@ -150,9 +162,12 @@ const WeekDay = ({
   );
 };
 
-const WeekDaysContainer: React.FC = (): JSX.Element => {
+const WeekDaysContainer = ({
+  selectedDay,
+  setSelectedDay,
+}: WeekDaysContainerProps): JSX.Element => {
   const week = returnCurrentWeek();
-  const [selectedDay, setSelectedDay] = useState(moment().format("D-MMM-YYYY"));
+
   return (
     <SpaceBetween>
       {week?.map((day, index) => {
@@ -291,25 +306,20 @@ const TimeLineItem = ({
   );
 };
 
-const AdgendaComponent = (params: any): JSX.Element => {
+const AdgendaComponent = ({
+  schedule,
+  params,
+}: AdgendaComponentProps): JSX.Element => {
   const twentyForHourTime = getTime();
-  const newParams = params?.params?.params;
+  const newParams = params?.params;
 
-  const AdgendaData = [
-    { startTime: "00:00 AM", endTime: "01:30 AM", text: "Going For a walk" },
-    { startTime: "13:00 PM", endTime: "14:00 PM", text: "Going For a walk" },
-    { startTime: "03:00 AM", endTime: "04:59 AM", text: "Walking the Dog" },
-    {
-      startTime: "05:00 AM",
-      endTime: "06:00 AM",
-      text: "Getting Favour flowers",
-    },
-    {
-      startTime: "17:00 PM",
-      endTime: "18:00 PM",
-      text: "Getting Favour flowers",
-    },
-  ];
+  const AdgendaData = schedule?.map((item) => {
+    return {
+      startTime: item?.startTime,
+      endTime: item?.endTime,
+      text: item?.title,
+    };
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -330,9 +340,23 @@ const AdgendaComponent = (params: any): JSX.Element => {
 };
 
 const Schedule = (params: any): JSX.Element => {
+  const [selectedDay, setSelectedDay] = useState(moment().format("D-MMM-YYYY"));
+  const dataList = params?.params?.dataList || [];
+
+  const selectedDaySchedule = dataList?.filter((item: TaskDataProp) => {
+    const day = new Date(parseInt(item?.date, 10));
+
+    const momentiFiedDay = moment(day).format("D-MMM-YYYY");
+
+    return momentiFiedDay === selectedDay;
+  });
+
   return (
     <Container>
-      <WeekDaysContainer />
+      <WeekDaysContainer
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+      />
       <TimeLineHeader />
       <ScrollView
         contentContainerStyle={{
@@ -340,7 +364,7 @@ const Schedule = (params: any): JSX.Element => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <AdgendaComponent params={params} />
+        <AdgendaComponent params={params} schedule={selectedDaySchedule} />
       </ScrollView>
     </Container>
   );

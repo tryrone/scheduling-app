@@ -1,4 +1,9 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import SafeAreaWrap from "../components/SafeAreaWrap";
 import styled from "styled-components/native";
 import Colors from "../constants/Colors";
@@ -10,7 +15,13 @@ import { githubIcon, googleIcon, twitterIcon } from "../../assets/images";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import appLogger from "../logger";
-import { makeRedirectUri } from "expo-auth-session";
+import {
+  AccessTokenRequest,
+  AuthRequest,
+  makeRedirectUri,
+  useAuthRequest,
+  startAsync,
+} from "expo-auth-session";
 import { getLocalDeviceData, storeLocalLoginData } from "../utils";
 
 const Container = styled.View`
@@ -36,16 +47,26 @@ const IconImage = styled.Image`
 WebBrowser.maybeCompleteAuthSession();
 
 const Login = ({ navigation }: any) => {
-  // web client id: 675869283230-19opr8g3f9d5fk0gq56d55q7nv0bjqfg.apps.googleusercontent.com
-  // ios client id: 675869283230-g2ccfd64l49ok8n149j7vn26fi0j7s76.apps.googleusercontent.com
-  // android client id: 675869283230-0pifoqa7rieeuhgudvafn51aehh0rs99.apps.googleusercontent.com
+  // Twitter OAuth
 
+  const requestTokenURL = "http://127.0.0.1:3000/request-token";
+  const accessTokenURL = "http://127.0.0.1:3000/access-token";
+
+  // github OAuth
+  const githubDiscovery = {
+    authorizationEndpoint: "https://github.com/login/oauth/authorize",
+    tokenEndpoint: "https://github.com/login/oauth/access_token",
+    revocationEndpoint:
+      "https://github.com/settings/connections/applications/96cc683ce373f2eba707",
+  };
+
+  // google OAuth
   const redirectUri = makeRedirectUri({
     useProxy: false,
     scheme: "com.scheduleapp.tega",
     path: "/@tyrone/schedule-app",
   });
-
+  const [twitterError, setTwitterError]: any = useState();
   const [accessToken, setAccessToken] = useState(null);
   const [request, response, promptAsync]: any = Google.useAuthRequest({
     expoClientId:
@@ -56,6 +77,19 @@ const Login = ({ navigation }: any) => {
       "675869283230-0pifoqa7rieeuhgudvafn51aehh0rs99.apps.googleusercontent.com",
     redirectUri,
   });
+
+  const [githubRequest, githubResponse, githubPromptAsync]: any =
+    useAuthRequest(
+      {
+        clientId: "96cc683ce373f2eba707",
+        scopes: ["identity"],
+        redirectUri: makeRedirectUri({
+          useProxy: true,
+          scheme: "com.scheduleapp.tega",
+        }),
+      },
+      githubDiscovery
+    );
 
   useLayoutEffect(() => {
     userData();
@@ -68,6 +102,12 @@ const Login = ({ navigation }: any) => {
       accessToken && fetchGoogleUserInfo();
     }
   }, [response, accessToken]);
+
+  useEffect(() => {
+    if (githubResponse?.type === "success") {
+      appLogger.info({ githubResponse });
+    }
+  }, [githubResponse]);
 
   const userData = async () => {
     const user = await getLocalDeviceData();
@@ -91,6 +131,69 @@ const Login = ({ navigation }: any) => {
       appLogger.info({ error });
     }
   };
+
+  function toQueryString(params: any) {
+    return (
+      "?" +
+      Object.entries(params)
+        .map(
+          ([key, value]: any) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        )
+        .join("&")
+    );
+  }
+
+  const onTwitterLogin = useCallback(async () => {
+    try {
+      // Step #1 - first we need to fetch a request token to start the browser-based authentication flow
+      const requestParams = toQueryString({
+        callback_url: "https://auth.expo.io/@tyrone/schedule-app",
+      });
+      const requestTokens = await fetch(requestTokenURL + requestParams).then(
+        (res) => res.json()
+      );
+
+      appLogger.info("Request tokens fetched!", requestTokens);
+
+      // Step #2 - after we received the request tokens, we can start the auth session flow using these tokens
+      const authResponse: any = await startAsync({
+        authUrl:
+          "https://api.twitter.com/oauth/authenticate" +
+          toQueryString(requestTokens),
+      });
+
+      appLogger.info("Auth response received!", authResponse);
+
+      // Validate if the auth session response is successful
+      // Note, we still receive a `authResponse.type = 'success'`, thats why we need to check on the params itself
+      if (authResponse.params && authResponse.params.denied) {
+        return setTwitterError(
+          "AuthSession failed, user did not authorize the app"
+        );
+      }
+
+      // Step #3 - when the user (successfully) authorized the app, we will receive a verification code.
+      // With this code we can request an access token and finish the auth flow.
+      const accessParams = toQueryString({
+        oauth_token: requestTokens?.oauth_token,
+        oauth_token_secret: requestTokens?.oauth_token_secret,
+        oauth_verifier: authResponse?.params?.oauth_verifier,
+      });
+      const accessTokens = await fetch(accessTokenURL + accessParams).then(
+        (res) => res.json()
+      );
+
+      appLogger.info("Access tokens fetched!", accessTokens);
+
+      // Now let's store the username in our state to render it.
+      // You might want to store the `oauth_token` and `oauth_token_secret` for future use.
+    } catch (error: any) {
+      console.log("Something went wrong...", error);
+      setTwitterError(error?.message);
+    } finally {
+    }
+  }, []);
 
   return (
     <SafeAreaWrap style={{ paddingHorizontal: 10, paddingTop: 31 }}>
@@ -122,6 +225,7 @@ const Login = ({ navigation }: any) => {
           textSize={16}
           bgColor={Colors?.white}
           borderRadius="10px"
+          disabled={!request}
           textColor={"rgba(0, 0, 0, 0.54)"}
           fontWeight="500"
           text="Continue with Google"
@@ -145,13 +249,16 @@ const Login = ({ navigation }: any) => {
           btnStyle={{ alignItems: "flex-start", paddingLeft: 15 }}
           fontFamily={Fonts?.DMSansMedium}
           icon={<IconImage source={twitterIcon} resizeMode="cover" />}
+          onPress={() => {
+            onTwitterLogin();
+          }}
         />
 
         <Button
           style={{
             marginTop: 16,
           }}
-          disabled={!request}
+          disabled={!githubRequest}
           textSize={16}
           bgColor={Colors?.white}
           borderRadius="10px"
@@ -162,6 +269,9 @@ const Login = ({ navigation }: any) => {
           btnStyle={{ alignItems: "flex-start", paddingLeft: 15 }}
           fontFamily={Fonts?.DMSansMedium}
           icon={<IconImage source={githubIcon} resizeMode="contain" />}
+          onPress={() => {
+            githubPromptAsync();
+          }}
         />
       </Container>
     </SafeAreaWrap>

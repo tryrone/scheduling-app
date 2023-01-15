@@ -21,6 +21,7 @@
     "expo-blur": "^12.0.1",
     "expo-font": "^11.0.1",
     "expo-random": "^13.0.0",
+    "expo-splash-screen": "~0.17.5",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",
     "expo-web-browser": "^12.0.0",
@@ -38,8 +39,7 @@
     "react-native-svg": "^13.6.0",
     "react-native-text": "^1.2.2",
     "react-native-web": "~0.18.9",
-    "styled-components": "^5.3.6",
-    "expo-splash-screen": "~0.17.5"
+    "styled-components": "^5.3.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

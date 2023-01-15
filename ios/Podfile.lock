@@ -17,13 +17,13 @@ PODS:
   - EXJSONUtils (0.4.0)
   - EXManifests (0.4.0):
     - EXJSONUtils
-  - Expo (47.0.10):
+  - Expo (47.0.13):
     - ExpoModulesCore
   - ExpoCrypto (12.0.0):
     - ExpoModulesCore
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
-  - ExpoModulesCore (1.1.0):
+  - ExpoModulesCore (1.1.1):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (13.0.0):
@@ -340,7 +340,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.8.0):
     - React-Core
-  - RNSVG (13.6.0):
+  - RNSVG (13.7.0):
     - React-Core
   - Yoga (1.14.0)
 
@@ -531,10 +531,10 @@ SPEC CHECKSUMS:
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
   EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
-  Expo: a694d89d2461fdfc6b977bf489bf7d341ed03bca
+  Expo: b9fa98bf260992312ee3c424400819fb9beadafe
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
-  ExpoModulesCore: 089e1ac0f0edee4dd0af0eb4e3f7b44d72cc418d
+  ExpoModulesCore: 485dff3a59b036a33b6050c0a5aea3cf1037fdd1
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoWebBrowser: 073e50f16669d498fb49063b9b7fe780b24f7fda
   EXSplashScreen: 3e989924f61a8dd07ee4ea584c6ba14be9b51949
@@ -575,7 +575,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNSVG: 3a79c0c4992213e4f06c08e62730c5e7b9e4dc17
+  RNSVG: d787d64ca06b9158e763ad2638a8c4edce00782a
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
 
 PODFILE CHECKSUM: 4a6bfb75767a13ce8ceaeff6e3391b8469ebd986

@@ -15,14 +15,8 @@ import { githubIcon, googleIcon, twitterIcon } from "../../assets/images";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import appLogger from "../logger";
-import {
-  AccessTokenRequest,
-  AuthRequest,
-  makeRedirectUri,
-  useAuthRequest,
-  startAsync,
-} from "expo-auth-session";
-import { getLocalDeviceData, storeLocalLoginData } from "../utils";
+import { makeRedirectUri, useAuthRequest, startAsync } from "expo-auth-session";
+import { getLocalLoginData, storeLocalLoginData } from "../utils";
 
 const Container = styled.View`
   border-radius: 32px;
@@ -51,6 +45,7 @@ const Login = ({ navigation }: any) => {
 
   const requestTokenURL = "http://127.0.0.1:3000/request-token";
   const accessTokenURL = "http://127.0.0.1:3000/access-token";
+  const userDataURL = "http://127.0.0.1:3000/user-data";
 
   // github OAuth
   const githubDiscovery = {
@@ -110,7 +105,7 @@ const Login = ({ navigation }: any) => {
   }, [githubResponse]);
 
   const userData = async () => {
-    const user = await getLocalDeviceData();
+    const user = await getLocalLoginData();
     if (user) {
       navigation?.navigate("AuthenticatedStack");
     }
@@ -122,8 +117,12 @@ const Login = ({ navigation }: any) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const userInfo = await response.json();
-      const storageResp = await storeLocalLoginData(userInfo);
-      console.log({ storageResp });
+      const userDetails = {
+        user_id: userInfo?.id,
+        name: userInfo?.name,
+      };
+      const storageResp = await storeLocalLoginData(userDetails);
+
       if (storageResp) {
         navigation?.navigate("AuthenticatedStack");
       }
@@ -154,7 +153,7 @@ const Login = ({ navigation }: any) => {
         (res) => res.json()
       );
 
-      appLogger.info("Request tokens fetched!", requestTokens);
+      // appLogger.info("Request tokens fetched!", requestTokens);
 
       // Step #2 - after we received the request tokens, we can start the auth session flow using these tokens
       const authResponse: any = await startAsync({
@@ -163,7 +162,7 @@ const Login = ({ navigation }: any) => {
           toQueryString(requestTokens),
       });
 
-      appLogger.info("Auth response received!", authResponse);
+      // appLogger.info("Auth response received!", authResponse);
 
       // Validate if the auth session response is successful
       // Note, we still receive a `authResponse.type = 'success'`, thats why we need to check on the params itself
@@ -184,7 +183,18 @@ const Login = ({ navigation }: any) => {
         (res) => res.json()
       );
 
-      appLogger.info("Access tokens fetched!", accessTokens);
+      // appLogger.info("Access tokens fetched!", accessTokens);
+
+      const userDetails = {
+        user_id: accessTokens?.user_id,
+        name: accessTokens?.screen_name,
+      };
+
+      const storageResp = await storeLocalLoginData(userDetails);
+
+      if (storageResp) {
+        navigation?.navigate("AuthenticatedStack");
+      }
 
       // Now let's store the username in our state to render it.
       // You might want to store the `oauth_token` and `oauth_token_secret` for future use.
@@ -254,7 +264,7 @@ const Login = ({ navigation }: any) => {
           }}
         />
 
-        <Button
+        {/* <Button
           style={{
             marginTop: 16,
           }}
@@ -272,7 +282,7 @@ const Login = ({ navigation }: any) => {
           onPress={() => {
             githubPromptAsync();
           }}
-        />
+        /> */}
       </Container>
     </SafeAreaWrap>
   );

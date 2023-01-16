@@ -204,7 +204,7 @@ export const storeLocalLoginData = async (value: Record<string, string>) => {
   }
 };
 
-export const getLocalDeviceData = async () => {
+export const getLocalLoginData = async () => {
   try {
     const jsonValue = await AsyncStorage.getItem("@login_data");
     return jsonValue != null ? JSON.parse(jsonValue) : null;

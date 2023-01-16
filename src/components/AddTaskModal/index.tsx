@@ -10,7 +10,12 @@ import Button from "../Button";
 import KeyboardShift from "../TextInput/keyoardAvoidingView";
 import CalenderModal from "./CalenderModal";
 import moment from "moment";
-import { checkObjectValues, getLocalData, storeData } from "../../utils";
+import {
+  checkObjectValues,
+  getLocalData,
+  getLocalLoginData,
+  storeData,
+} from "../../utils";
 import { getFirestore } from "firebase/firestore";
 import { app } from "../../../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
@@ -65,10 +70,12 @@ export type TaskDataProp = {
   startTime: string;
   endTime: string;
   group: string;
+  user_id: string;
 };
 
 const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
   const [calenderModalVisible, setCalenderModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [taskData, setTaskData] = useReducer(
     (prev: TaskDataProp, next: any | TaskDataProp) => {
@@ -119,9 +126,11 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
   };
 
   const onSubmit = async () => {
+    const user = await getLocalLoginData();
     if (taskData?.endTime < taskData?.startTime) {
       return setError("end time cannot be less that start time");
     }
+    setLoading(true);
     if (!checkObjectValues(taskData)) {
       try {
         const docRef = await addDoc(collection(db, "tasks"), {
@@ -130,6 +139,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
           group: taskData?.group,
           startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
           title: taskData?.title,
+          user_id: user?.user_id,
         });
         const localData = await getLocalData();
         if (!localData) {
@@ -140,6 +150,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
               group: taskData?.group,
               startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
               title: taskData?.title,
+              user_id: user?.user_id,
             },
           ]);
         } else {
@@ -155,6 +166,8 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
           ]);
         }
 
+        setLoading(false);
+
         setError("");
         setTaskData({
           title: "",
@@ -166,9 +179,8 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
         console.log("Document written with ID: ", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
+        setLoading(false);
       }
-
-      // console.log({ taskData });
     } else {
       setError("All fields must be filled");
     }
@@ -271,8 +283,9 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
               <Button
                 style={{ marginTop: 16 }}
                 text="Create Task"
-                disabled={checkObjectValues(taskData)}
+                disabled={checkObjectValues(taskData) || loading}
                 onPress={onSubmit}
+                loading={loading}
                 bgColor={Colors?.black}
               />
             </Container>

@@ -1,4 +1,4 @@
-import { Animated, Dimensions, Modal } from "react-native";
+import { Animated, Dimensions, Modal, Platform } from "react-native";
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import styled from "styled-components/native";
 import Colors from "../../constants/Colors";
@@ -19,6 +19,8 @@ import {
 import { getFirestore } from "firebase/firestore";
 import { app } from "../../../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
+import appLogger from "../../logger";
+import { Keyboard } from "react-native";
 
 const { height } = Dimensions.get("window");
 
@@ -113,6 +115,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
       useNativeDriver: true,
     }).start();
     setTimeout(() => {
+      setLoading(false);
       setError("");
       setTaskData({
         title: "",
@@ -126,21 +129,27 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
   };
 
   const onSubmit = async () => {
+    setLoading(true);
     const user = await getLocalLoginData();
     if (taskData?.endTime < taskData?.startTime) {
       return setError("end time cannot be less that start time");
     }
-    setLoading(true);
+
     if (!checkObjectValues(taskData)) {
       try {
-        const docRef = await addDoc(collection(db, "tasks"), {
-          date: `${taskData?.date}`,
-          endTime: `${moment(taskData?.endTime).format("H:mm A")}`,
-          group: taskData?.group,
-          startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
-          title: taskData?.title,
-          user_id: user?.user_id,
-        });
+        if (Platform.OS === "ios") {
+          const docRef = await addDoc(collection(db, "tasks"), {
+            date: `${taskData?.date}`,
+            endTime: `${moment(taskData?.endTime).format("H:mm A")}`,
+            group: taskData?.group,
+            startTime: `${moment(taskData?.startTime).format("H:mm A")}`,
+            title: taskData?.title,
+            user_id: user?.user_id,
+          });
+
+          appLogger.info("saved on firebase with id:", docRef?.id);
+        }
+
         const localData = await getLocalData();
         if (!localData) {
           await storeData([
@@ -165,7 +174,6 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
             },
           ]);
         }
-
         setLoading(false);
 
         setError("");
@@ -176,12 +184,12 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
           endTime: "",
           group: "",
         });
-        console.log("Document written with ID: ", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
         setLoading(false);
       }
     } else {
+      setLoading(false);
       setError("All fields must be filled");
     }
   };

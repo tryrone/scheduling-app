@@ -207,7 +207,19 @@ const Login = ({ navigation }: any) => {
 
   return (
     <SafeAreaWrap style={{ paddingHorizontal: 10, paddingTop: 31 }}>
-      <Container>
+      <Container
+        style={{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 1,
+          },
+          shadowOpacity: 0.22,
+          shadowRadius: 2.22,
+
+          elevation: 3,
+        }}
+      >
         <AppIconSvg />
 
         <CustomText

@@ -1,4 +1,5 @@
 import React from "react";
+import { StatusBar } from "react-native";
 import SafeAreaWrap from "../components/SafeAreaWrap";
 import Colors from "../constants/Colors";
 import DetailHeader from "./components/DetailHeader";
@@ -9,6 +10,7 @@ const Detail = ({ navigation, route }: any): JSX.Element => {
 
   return (
     <SafeAreaWrap safeAreaBg={Colors?.black} bg={Colors?.black}>
+      <StatusBar backgroundColor={Colors?.black} animated />
       <>
         <DetailHeader navigation={navigation} params={params} />
         <Schedule params={params} />

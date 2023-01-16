@@ -12,6 +12,9 @@ import {
   returnGroupData,
 } from "../../utils";
 import appLogger from "../../logger";
+import { Dimensions } from "react-native";
+
+const { height } = Dimensions.get("window");
 
 const Container = styled.View`
   padding-horizontal: 16px;
@@ -30,11 +33,11 @@ const ItemWrap = styled.TouchableOpacity<{
   bgColor: string;
 }>`
   width: 48%;
-  height: 170px;
+  height: ${height * 0.25}px;
   border-radius: 15px;
   background-color: ${({ bgColor }) => bgColor};
   padding: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   justify-content: space-between;
 `;
 
@@ -63,7 +66,7 @@ const Row = styled.View<{
 `;
 
 const AddTaskWrap = styled.TouchableOpacity`
-  height: 170px;
+  height: ${height * 0.25}px;
   width: 48%;
   border: 2px dashed ${Colors?.grey_2};
   justify-content: center;

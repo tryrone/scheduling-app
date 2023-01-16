@@ -3,7 +3,7 @@ import SafeAreaWrap from "../components/SafeAreaWrap";
 import Header from "./components/Header";
 import PremiumCard from "./components/PremiumCard";
 import Tasks from "./components/Tasks";
-import { ScrollView } from "react-native";
+import { Platform, ScrollView, StatusBar } from "react-native";
 import AddTaskModal from "../components/AddTaskModal";
 import { getFirestore } from "firebase/firestore";
 import { collection, getDocs } from "firebase/firestore";
@@ -25,27 +25,33 @@ const Home = ({ navigation }: HomeProp) => {
   const db = getFirestore(app);
 
   const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, "tasks"));
-
     const user = await getLocalLoginData();
-
-    const taskData: any[] = querySnapshot?.docs?.map((doc) => {
-      return { id: doc.id, ...doc.data() };
-    });
-
-    if (taskData?.length === 0 || !querySnapshot) {
+    if (Platform.OS === "android") {
       const localData = await getLocalData();
-      const thisWeekData = returnOnlyDataForCurrentWeek(localData);
-      const userDataFromId = thisWeekData?.filter(
-        (week) => week?.user_id === user?.user_id
-      );
+      const thisWeekData = returnOnlyDataForCurrentWeek(localData || []);
+      const userDataFromId =
+        thisWeekData?.filter((week) => week?.user_id === user?.user_id) || [];
       setTasksForTheWeek(userDataFromId);
     } else {
-      const thisWeekData = returnOnlyDataForCurrentWeek(taskData);
-      const userDataFromId = thisWeekData?.filter(
-        (week) => week?.user_id === user?.user_id
-      );
-      setTasksForTheWeek(userDataFromId);
+      const querySnapshot = await getDocs(collection(db, "tasks"));
+
+      const taskData: any[] = querySnapshot?.docs?.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
+
+      if (taskData?.length === 0) {
+        const localData = await getLocalData();
+        const thisWeekData = returnOnlyDataForCurrentWeek(localData || []);
+        const userDataFromId =
+          thisWeekData?.filter((week) => week?.user_id === user?.user_id) || [];
+        setTasksForTheWeek(userDataFromId);
+      } else {
+        const thisWeekData = returnOnlyDataForCurrentWeek(taskData);
+        const userDataFromId = thisWeekData?.filter(
+          (week) => week?.user_id === user?.user_id
+        );
+        setTasksForTheWeek(userDataFromId);
+      }
     }
   };
 
@@ -55,6 +61,7 @@ const Home = ({ navigation }: HomeProp) => {
 
   return (
     <SafeAreaWrap>
+      <StatusBar barStyle="dark-content" animated />
       <>
         <Header />
         <PremiumCard />

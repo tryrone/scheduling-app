@@ -446,7 +446,7 @@ export const DropDown = ({
             }
             style={{
               position: "relative",
-              top: Platform.OS === "android" ? 24 : 0,
+              top: Platform.OS === "android" ? 13 : 0,
             }}
             align="left"
             fontWeight="400"

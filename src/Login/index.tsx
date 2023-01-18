@@ -25,6 +25,7 @@ const Container = styled.View`
   padding-bottom: 34px;
   width: 100%;
   padding-top: 22px;
+  padding-bottom: 62px;
   justify-content: center;
   align-items: center;
 `;
@@ -209,15 +210,14 @@ const Login = ({ navigation }: any) => {
     <SafeAreaWrap style={{ paddingHorizontal: 10, paddingTop: 31 }}>
       <Container
         style={{
-          shadowColor: "#000",
+          shadowColor: "rgba(0,0,0,0.2)",
           shadowOffset: {
             width: 0,
-            height: 1,
+            height: 7,
           },
-          shadowOpacity: 0.22,
-          shadowRadius: 2.22,
-
-          elevation: 3,
+          shadowOpacity: 0.41,
+          shadowRadius: 9.11,
+          elevation: 14,
         }}
       >
         <AppIconSvg />

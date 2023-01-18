@@ -1,18 +1,18 @@
-import React, { Key } from "react";
+import React from "react";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import styled from "styled-components/native";
 import Fonts from "../../constants/Fonts";
 import { blueHeart, orangeUser, redBag } from "../../../assets/images";
-import { NavigationProp } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { TaskDataProp } from "../../components/AddTaskModal";
 import {
   Groups,
   returnDoneAndUpcomingTasks,
   returnGroupData,
 } from "../../utils";
-import appLogger from "../../logger";
 import { Dimensions } from "react-native";
+import * as Animatable from "react-native-animatable";
 
 const { height } = Dimensions.get("window");
 
@@ -32,8 +32,8 @@ const RowWrapped = styled.View`
 const ItemWrap = styled.TouchableOpacity<{
   bgColor: string;
 }>`
-  width: 48%;
-  height: ${height * 0.25}px;
+  width: 100%;
+  height: ${height * 0.23}px;
   border-radius: 15px;
   background-color: ${({ bgColor }) => bgColor};
   padding: 12px;
@@ -66,8 +66,8 @@ const Row = styled.View<{
 `;
 
 const AddTaskWrap = styled.TouchableOpacity`
-  height: ${height * 0.25}px;
-  width: 48%;
+  height: ${height * 0.23}px;
+  width: 100%%;
   border: 2px dashed ${Colors?.grey_2};
   justify-content: center;
   align-items: center;
@@ -84,6 +84,8 @@ type TaskItemProps = {
   onPress: (() => void) | undefined;
   pastTasks?: number;
   upcomingTasks?: number;
+  delay: number;
+  animationType: string | Record<string, string> | any;
 };
 
 const TaskItem = ({
@@ -96,48 +98,56 @@ const TaskItem = ({
   onPress,
   pastTasks,
   upcomingTasks,
+  animationType,
+  delay,
 }: TaskItemProps): JSX.Element => {
   return (
-    <ItemWrap bgColor={bgColor} onPress={onPress}>
-      <IconImage source={iconImage} resizeMode="contain" />
-      <CustomText
-        color={Colors?.black}
-        fontSize={16}
-        top={35}
-        bottom={25}
-        fontFamily={Fonts?.DMSansBold}
-        fontWeight="700"
-      >
-        {title}
-      </CustomText>
-      <Row>
-        {upcomingTasks !== undefined && (
-          <Pill bgColor={lightPillColor}>
-            <CustomText
-              color={textColor}
-              fontSize={14}
-              fontFamily={Fonts?.DMSansBold}
-              fontWeight="700"
-            >
-              {upcomingTasks} left
-            </CustomText>
-          </Pill>
-        )}
+    <Animatable.View
+      style={{ width: "48%" }}
+      delay={delay}
+      animation={animationType}
+    >
+      <ItemWrap bgColor={bgColor} onPress={onPress}>
+        <IconImage source={iconImage} resizeMode="contain" />
+        <CustomText
+          color={Colors?.black}
+          fontSize={16}
+          top={35}
+          bottom={25}
+          fontFamily={Fonts?.DMSansBold}
+          fontWeight="700"
+        >
+          {title}
+        </CustomText>
+        <Row>
+          {upcomingTasks !== undefined && (
+            <Pill bgColor={lightPillColor}>
+              <CustomText
+                color={textColor}
+                fontSize={14}
+                fontFamily={Fonts?.DMSansBold}
+                fontWeight="700"
+              >
+                {upcomingTasks} left
+              </CustomText>
+            </Pill>
+          )}
 
-        {pastTasks !== undefined && (
-          <Pill bgColor={Colors?.white}>
-            <CustomText
-              color={doneTextColor}
-              fontSize={14}
-              fontFamily={Fonts?.DMSansBold}
-              fontWeight="700"
-            >
-              {pastTasks} done
-            </CustomText>
-          </Pill>
-        )}
-      </Row>
-    </ItemWrap>
+          {pastTasks !== undefined && (
+            <Pill bgColor={Colors?.white}>
+              <CustomText
+                color={doneTextColor}
+                fontSize={14}
+                fontFamily={Fonts?.DMSansBold}
+                fontWeight="700"
+              >
+                {pastTasks} done
+              </CustomText>
+            </Pill>
+          )}
+        </Row>
+      </ItemWrap>
+    </Animatable.View>
   );
 };
 
@@ -149,33 +159,43 @@ type TaskBtnProp = {
   currentWeekData: TaskDataProp[];
 };
 
-const AddTaskBtn = ({ setAddTaskModalVisible }: any): JSX.Element => {
+const AddTaskBtn = ({
+  setAddTaskModalVisible,
+  animationType,
+  delay,
+}: any): JSX.Element => {
   return (
-    <AddTaskWrap onPress={() => setAddTaskModalVisible(true)}>
-      <Row>
-        <CustomText
-          color={Colors?.black}
-          fontSize={30}
-          fontFamily={Fonts?.DMSansBold}
-          fontWeight="700"
-          style={{
-            position: "relative",
-            bottom: 1,
-          }}
-        >
-          +
-        </CustomText>
-        <CustomText
-          left={4}
-          color={Colors?.black}
-          fontSize={20}
-          fontFamily={Fonts?.DMSansBold}
-          fontWeight="700"
-        >
-          Add
-        </CustomText>
-      </Row>
-    </AddTaskWrap>
+    <Animatable.View
+      style={{ width: "48%" }}
+      delay={delay}
+      animation={animationType}
+    >
+      <AddTaskWrap onPress={() => setAddTaskModalVisible(true)}>
+        <Row>
+          <CustomText
+            color={Colors?.black}
+            fontSize={30}
+            fontFamily={Fonts?.DMSansBold}
+            fontWeight="700"
+            style={{
+              position: "relative",
+              bottom: 1,
+            }}
+          >
+            +
+          </CustomText>
+          <CustomText
+            left={4}
+            color={Colors?.black}
+            fontSize={20}
+            fontFamily={Fonts?.DMSansBold}
+            fontWeight="700"
+          >
+            Add
+          </CustomText>
+        </Row>
+      </AddTaskWrap>
+    </Animatable.View>
   );
 };
 
@@ -188,6 +208,8 @@ const Tasks = ({
   const workData = returnGroupData(currentWeekData, Groups.Work);
   const healthData = returnGroupData(currentWeekData, Groups.Health);
 
+  const isFocused = useIsFocused();
+
   const { pastTasks: personalPastTasks, upcomingTasks: personalUpcomingTasks } =
     returnDoneAndUpcomingTasks(currentWeekData, Groups.Personal);
 
@@ -196,6 +218,23 @@ const Tasks = ({
 
   const { pastTasks: healthPastTasks, upcomingTasks: healthUpcomingTasks } =
     returnDoneAndUpcomingTasks(currentWeekData, Groups.Health);
+
+  const slideInLeft = {
+    from: {
+      left: -1000,
+    },
+    to: {
+      left: 0,
+    },
+  };
+  const slideInRight = {
+    from: {
+      right: -1000,
+    },
+    to: {
+      right: 0,
+    },
+  };
 
   return (
     <Container>
@@ -226,7 +265,10 @@ const Tasks = ({
               dataList: personalData,
             })
           }
+          animationType={slideInLeft}
+          delay={0}
         />
+
         <TaskItem
           bgColor={Colors?.light_red}
           textColor={Colors?.tomato_red}
@@ -243,7 +285,10 @@ const Tasks = ({
               dataList: workData,
             })
           }
+          animationType={slideInRight}
+          delay={150}
         />
+
         <TaskItem
           bgColor={Colors?.light_blue}
           textColor={Colors?.blue}
@@ -260,11 +305,15 @@ const Tasks = ({
               dataList: healthData,
             })
           }
+          animationType={slideInLeft}
+          delay={200}
         />
 
         <AddTaskBtn
           navigation={navigation}
           setAddTaskModalVisible={setAddTaskModalVisible}
+          animationType={slideInRight}
+          delay={250}
         />
       </RowWrapped>
     </Container>

@@ -7,3 +7,4 @@ export const blueHeart = require("./heart.png");
 export const twitterIcon = require("./twitter.png");
 export const githubIcon = require("./github.png");
 export const googleIcon = require("./google.png");
+export const boldArrow = require("./bold-arrow-right.png");

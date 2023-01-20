@@ -10,6 +10,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Detail from "./src/DetailScreen";
 import Login from "./src/Login";
 import * as Linking from "expo-linking";
+import Profile from "./src/Profile";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +35,6 @@ const AddWrap = styled.View`
   bottom: 20px;
 `;
 
-const ProfileScreen = () => <></>;
 const AddScreen = () => <></>;
 
 const AddBtn = () => {
@@ -132,12 +132,7 @@ export default function App() {
             },
             tabBarShowLabel: false,
           }}
-          component={ProfileScreen}
-          listeners={{
-            tabPress: (e) => {
-              e.preventDefault();
-            },
-          }}
+          component={Profile}
         />
       </Tab.Navigator>
     );

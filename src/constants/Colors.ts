@@ -23,6 +23,7 @@ export default {
   grey_4: "#c7c7c7",
   grey_5: "#b8b8b8",
   grey_6: "#f6f6f6",
+  grey_7: "rgb(245, 244, 248)",
   error: "#ED5E3B",
   subtitle_text_2: "#999999",
   grey_green: "#E7EEEC",

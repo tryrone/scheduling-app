@@ -11,6 +11,7 @@ import ClockSvg from "./Clock.svg";
 import AlarmSvg from "./alarm.svg";
 import SelectIconSvg from "./select_Icon.svg";
 import AppIconSvg from "./appIcon.svg";
+import ArrowRight from "./thin-arrow-right.svg";
 
 export {
   PlusIcon,
@@ -26,4 +27,5 @@ export {
   AlarmSvg,
   SelectIconSvg,
   AppIconSvg,
+  ArrowRight,
 };

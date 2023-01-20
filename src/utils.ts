@@ -213,3 +213,13 @@ export const getLocalLoginData = async () => {
     appLogger.info("error reading data", e);
   }
 };
+
+export async function clearLocalData() {
+  try {
+    await AsyncStorage.clear();
+    return true;
+  } catch (e) {
+    console.log("AsyncStorage Error", e);
+    return false;
+  }
+}

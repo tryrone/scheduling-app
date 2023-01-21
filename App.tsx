@@ -11,6 +11,8 @@ import Detail from "./src/DetailScreen";
 import Login from "./src/Login";
 import * as Linking from "expo-linking";
 import Profile from "./src/Profile";
+import { useEffect } from "react";
+import Notification from "./notifications";
 
 const Tab = createBottomTabNavigator();
 
@@ -139,20 +141,23 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Login" component={Login} />
+    <>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Login" component={Login} />
 
-        <Stack.Screen
-          name="AuthenticatedStack"
-          component={AuthenticatedStack}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="AuthenticatedStack"
+            component={AuthenticatedStack}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Notification />
+    </>
   );
 }

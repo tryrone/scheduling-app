@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CustomText from "../../components/CustomText";
 import Colors from "../../constants/Colors";
 import styled from "styled-components/native";
@@ -7,12 +7,17 @@ import { blueHeart, orangeUser, redBag } from "../../../assets/images";
 import { useIsFocused } from "@react-navigation/native";
 import { TaskDataProp } from "../../components/AddTaskModal";
 import {
+  getHoursFromString,
+  getMinutesFromString,
+  getTimeFromString,
   Groups,
   returnDoneAndUpcomingTasks,
   returnGroupData,
 } from "../../utils";
 import { Dimensions } from "react-native";
 import * as Animatable from "react-native-animatable";
+import { schedulePushNotification } from "../../../notifications";
+import moment from "moment";
 
 const { height } = Dimensions.get("window");
 
@@ -67,7 +72,7 @@ const Row = styled.View<{
 
 const AddTaskWrap = styled.TouchableOpacity`
   height: ${height * 0.23}px;
-  width: 100%%;
+  width: 100%;
   border: 2px dashed ${Colors?.grey_2};
   justify-content: center;
   align-items: center;
@@ -210,6 +215,12 @@ const Tasks = ({
 
   const isFocused = useIsFocused();
 
+  useEffect(() => {
+    if (isFocused) {
+      scheduleAllNotifications();
+    }
+  }, [isFocused]);
+
   const { pastTasks: personalPastTasks, upcomingTasks: personalUpcomingTasks } =
     returnDoneAndUpcomingTasks(currentWeekData, Groups.Personal);
 
@@ -234,6 +245,26 @@ const Tasks = ({
     to: {
       right: 0,
     },
+  };
+
+  const upcomingTasks = [
+    ...personalUpcomingTasks,
+    ...workUpcomingTasks,
+    ...healthUpcomingTasks,
+  ];
+
+  const scheduleAllNotifications = () => {
+    upcomingTasks?.map((item) => {
+      const day = moment(parseInt(item?.date, 10)).format("dddd");
+
+      schedulePushNotification({
+        title: item?.title,
+        slot: `${item?.startTime} - ${item?.endTime}`,
+        day,
+        hours: getHoursFromString(item?.startTime),
+        minutes: getMinutesFromString(item?.startTime),
+      });
+    });
   };
 
   return (

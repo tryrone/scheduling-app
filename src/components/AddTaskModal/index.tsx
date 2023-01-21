@@ -125,7 +125,7 @@ const AddTaskModal = ({ visible, setVisible }: AddTaskModalProp) => {
         group: "",
       });
       setVisible(false);
-    }, 300);
+    }, 800);
   };
 
   const onSubmit = async () => {

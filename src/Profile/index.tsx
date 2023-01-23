@@ -1,5 +1,5 @@
 import { Alert, StatusBar } from "react-native";
-import React from "react";
+import React, { useLayoutEffect, useState } from "react";
 import SafeAreaWrap from "../components/SafeAreaWrap";
 import Colors from "../constants/Colors";
 import Fonts from "../constants/Fonts";
@@ -7,7 +7,7 @@ import CustomText from "../components/CustomText";
 import styled from "styled-components/native";
 import { boldArrow } from "../../assets/images";
 import { ArrowRight } from "../../assets/svg";
-import { clearLocalData } from "../utils";
+import { clearLocalData, getLocalLoginData } from "../utils";
 
 const NameWrap = styled.View`
   height: 80px;
@@ -46,6 +46,8 @@ const Icon = styled.Image`
 `;
 
 const Profile = ({ navigation }: any) => {
+  const [username, setUsername] = useState("User");
+
   const clearStorageData = async () => {
     const response: any = await clearLocalData();
     console.log({ response });
@@ -54,6 +56,15 @@ const Profile = ({ navigation }: any) => {
     } else {
       Alert.alert("Unable to Log out at the moment, please try again later.");
     }
+  };
+
+  useLayoutEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const user = await getLocalLoginData();
+    setUsername(user?.name);
   };
   return (
     <SafeAreaWrap style={{ paddingHorizontal: 20 }}>
@@ -67,7 +78,7 @@ const Profile = ({ navigation }: any) => {
           fontWeight="700"
           align="center"
         >
-          T
+          {username[0]}
         </CustomText>
       </NameWrap>
 
@@ -79,7 +90,7 @@ const Profile = ({ navigation }: any) => {
         align="center"
         top={16}
       >
-        Tega Oboraruvwe
+        {username}
       </CustomText>
 
       <SpacedRow onPress={clearStorageData} style={{ marginTop: 30 }}>

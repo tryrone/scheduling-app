@@ -53,7 +53,7 @@ const Login = ({ navigation }: any) => {
     authorizationEndpoint: "https://github.com/login/oauth/authorize",
     tokenEndpoint: "https://github.com/login/oauth/access_token",
     revocationEndpoint:
-      "https://github.com/settings/connections/applications/96cc683ce373f2eba707",
+      "https://github.com/settings/connections/applications/XXXXX",
   };
 
   // google OAuth
@@ -65,19 +65,16 @@ const Login = ({ navigation }: any) => {
   const [twitterError, setTwitterError]: any = useState();
   const [accessToken, setAccessToken] = useState(null);
   const [request, response, promptAsync]: any = Google.useAuthRequest({
-    expoClientId:
-      "675869283230-19opr8g3f9d5fk0gq56d55q7nv0bjqfg.apps.googleusercontent.com",
-    iosClientId:
-      "675869283230-g2ccfd64l49ok8n149j7vn26fi0j7s76.apps.googleusercontent.com",
-    androidClientId:
-      "675869283230-0pifoqa7rieeuhgudvafn51aehh0rs99.apps.googleusercontent.com",
+    expoClientId: "XXXXX.apps.googleusercontent.com",
+    iosClientId: "XXXXX.apps.googleusercontent.com",
+    androidClientId: "XXXX.apps.googleusercontent.com",
     redirectUri,
   });
 
   const [githubRequest, githubResponse, githubPromptAsync]: any =
     useAuthRequest(
       {
-        clientId: "96cc683ce373f2eba707",
+        clientId: "XXXX",
         scopes: ["identity"],
         redirectUri: makeRedirectUri({
           useProxy: true,
